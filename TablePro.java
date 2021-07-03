@@ -3,8 +3,12 @@ import java.awt.Color;
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.event.*;
+import java.sql.*;
 public class TablePro extends JFrame implements ActionListener
 {
+    Connection con;
+    Statement st;
+    String query;
 	JFrame frame = new JFrame("My Data");;
 	
 	JLabel l1 = new JLabel("Registration Form");
@@ -25,8 +29,6 @@ public class TablePro extends JFrame implements ActionListener
 	
 	JTable jt;
 	DefaultTableModel m = new DefaultTableModel();
-	
-	
 	
 	String cn[] = {"E.NO","NAME","MOBILE","COURSE","UNIVERSITY"};
 	Object data[] = new Object[5];
@@ -105,7 +107,6 @@ public class TablePro extends JFrame implements ActionListener
 		
 		jt.setModel(m);
 		
-		
 		jt.setForeground(Color.black);
 		jt.setBackground(Color.LIGHT_GRAY);
 		jt.setFont(new Font("Serif",Font.PLAIN,20));
@@ -113,7 +114,6 @@ public class TablePro extends JFrame implements ActionListener
 		jt.setGridColor(Color.ORANGE);
 		jt.setShowHorizontalLines(true);
 		
-        
 		JScrollPane sp = new JScrollPane(jt);
 		sp.setBounds(850, 100, 900, 400);
 		
@@ -134,17 +134,58 @@ public class TablePro extends JFrame implements ActionListener
 		add(bu);
 		
         setVisible(true);
+
+        try {            
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/univStudents", "root", "groot");
+            System.out.println("Connection Successful..");
+            st = con.createStatement();
+            
+            
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        showDatabase();
 	}
-	
-	public void add()
+   public void showDatabase()
+   {try{
+    PreparedStatement pstm = con.prepareStatement("select * from StudentData");
+    ResultSet Rs = pstm.executeQuery();
+    while(Rs.next()){
+        m.addRow(new Object[]{Rs.getInt(1), Rs.getString(2),Rs.getString(3),Rs.getString(4),Rs.getString(5)});
+    }}catch(Exception e){}
+   }
+    public void add()
 	{
-		data[0] = tf1.getText();
+        query = "Insert into StudentData values ('"+Integer.parseInt(tf1.getText())+"','"+tf2.getText()+"','"+tf3.getText()+"','"+tf4.getText()+"','"+tf5.getText()+"')";
+        System.out.println(query);
+        data[0] = Integer.parseInt(tf1.getText());
 		data[1] = tf2.getText();
 		data[2] = tf3.getText();
-		data[3] = tf4.getText();
-		data[4] = tf5.getText();
-		
+		data[3]= tf4.getText();
+		data[4]= tf5.getText();
 	}
+    public void insert()
+    { 
+        try {    
+            add();
+            st.executeUpdate(query);
+            System.out.println("Insertion Successful...");
+            st.close(); 
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+    }
+/*	public void clear()
+	{
+		tf1.setText(" ");
+		tf2.setText(" ");
+		tf3.setText(" ");
+		tf4.setText(" ");
+		tf5.setText(" ");
+	}*/
+	
 	public void update()
 	{
 		int i = jt.getSelectedRow();
@@ -161,8 +202,10 @@ public class TablePro extends JFrame implements ActionListener
 	{
 		if(e.getSource() == ba)
 		{
-			add();
+			insert();
 			m.addRow(data);
+           // clear();
+   
 		}
 		if(e.getSource() == bu)
 		{
@@ -178,7 +221,6 @@ public class TablePro extends JFrame implements ActionListener
 			tf3.setText(m.getValueAt(i,2).toString());
 			tf4.setText(m.getValueAt(i,3).toString());
 			tf5.setText(m.getValueAt(i,4).toString());
-			
 		}
 	
 	public static void main(String [] arr)
