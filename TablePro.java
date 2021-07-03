@@ -153,7 +153,8 @@ public class TablePro extends JFrame implements ActionListener
     ResultSet Rs = pstm.executeQuery();
     while(Rs.next()){
         m.addRow(new Object[]{Rs.getInt(1), Rs.getString(2),Rs.getString(3),Rs.getString(4),Rs.getString(5)});
-    }}catch(Exception e){}
+    }
+    }catch(Exception e){}
    }
     public void add()
 	{
@@ -177,6 +178,7 @@ public class TablePro extends JFrame implements ActionListener
         }
 
     }
+    
 /*	public void clear()
 	{
 		tf1.setText(" ");
@@ -188,32 +190,46 @@ public class TablePro extends JFrame implements ActionListener
 	
 	public void update()
 	{
-		int i = jt.getSelectedRow();
-		if(i>=0)
+       /* if(i>=0)
 		{	
 			m.setValueAt(tf1.getText(),i,0);
 			m.setValueAt(tf2.getText(),i,1);
 			m.setValueAt(tf3.getText(),i,2);
 			m.setValueAt(tf4.getText(),i,3);
 			m.setValueAt(tf5.getText(),i,4);
-		}
+		}*/
+        String query = "Update StudentData set name='"+tf2.getText()+"',mobile='"+tf3.getText()+"',course='"+tf4.getText()+"',univ='"+tf5.getText()+"' where ENo="+Integer.parseInt(tf1.getText());
+        System.out.println(query);
+        try {
+            st.executeUpdate(query);
+            System.out.println("Update Successful...");
+           
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+		//int i = jt.getSelectedRow();
+		
 	}
 	public void actionPerformed(ActionEvent e)
 	{
+        m.setRowCount(0);
+        
 		if(e.getSource() == ba)
 		{
 			insert();
 			m.addRow(data);
            // clear();
+           showDatabase();
    
 		}
 		if(e.getSource() == bu)
 		{
 			update();
+            showDatabase();
 		}
 	}
 	
-	public void mouseClicked(MouseEvent em)
+/*	public void mouseClicked(MouseEvent em)
 		{
 			int i = jt.getSelectedRow();
 			tf1.setText(m.getValueAt(i,0).toString());
@@ -222,7 +238,7 @@ public class TablePro extends JFrame implements ActionListener
 			tf4.setText(m.getValueAt(i,3).toString());
 			tf5.setText(m.getValueAt(i,4).toString());
 		}
-	
+	*/
 	public static void main(String [] arr)
 	{
 		new TablePro();
